@@ -1,0 +1,336 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>CineScope — Movie reviews</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
+
+  <style>
+    :root{
+      --bg:#050814;--card:#0d1228;--accent:#ffb347;--accent-2:#ff5c7a;
+      --text:#f5f5ff;--muted:#a2a9cf;--radius:16px
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:radial-gradient(circle at top,#2c3e50,#00091f);
+      color:var(--text)
+    }
+    .wrap{max-width:1100px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:44px;height:44px;border-radius:999px;
+      background:linear-gradient(135deg,#ffebc7,#ff5c7a);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 10px 30px rgba(255,92,122,0.5)
+    }
+    .logo i{color:white}
+    .brand-title{font-weight:600;font-size:1.25rem}
+    .brand-sub{font-size:.78rem;color:var(--muted)}
+    .pill{
+      padding:8px 12px;border-radius:999px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
+      font-size:.85rem;color:var(--muted)
+    }
+    .grid{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:18px}
+    .hero{
+      background:linear-gradient(145deg,#090e24,#050814);
+      padding:20px;border-radius:18px;
+      border:1px solid rgba(255,255,255,0.04)
+    }
+    .hero h1{margin:0;font-size:1.6rem}
+    .hero p{color:var(--muted);margin:.65rem 0}
+    .actions{display:flex;gap:10px;margin-top:8px}
+    .btn{
+      border-radius:999px;padding:9px 14px;border:none;
+      cursor:pointer;font-weight:600;font-size:.9rem;
+      background:rgba(255,255,255,0.06);color:var(--text)
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:#fff
+    }
+    .panel{
+      background:linear-gradient(145deg,#050814,#0a0f26);
+      padding:16px;border-radius:18px;
+      border:1px solid rgba(255,255,255,0.04)
+    }
+    .field{display:flex;flex-direction:column;margin-bottom:8px}
+    .field label{font-size:.78rem;color:var(--muted);margin-bottom:6px}
+    .input,.select,.textarea{
+      padding:9px;border-radius:10px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(2,4,18,0.95);color:var(--text);outline:none;
+      font-family:inherit;font-size:.9rem
+    }
+    .textarea{min-height:70px;resize:vertical}
+    .movies{margin-top:6px}
+    .movie-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:14px
+    }
+    .movie{
+      background:rgba(5,7,22,0.98);border-radius:14px;
+      border:1px solid rgba(255,255,255,0.04);
+      overflow:hidden;display:flex;flex-direction:column
+    }
+    .poster{height:160px;background:linear-gradient(135deg,#ffb347,#ff5c7a)}
+    .poster img{width:100%;height:100%;object-fit:cover}
+    .m-body{padding:12px;display:flex;flex-direction:column;gap:6px}
+    .m-title{display:flex;justify-content:space-between;align-items:center}
+    .m-title h3{margin:0;font-size:1rem}
+    .meta{font-size:.78rem;color:var(--muted)}
+    .reviews{max-height:140px;overflow:auto;margin-top:8px;padding-right:6px}
+    .review{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .review .head{display:flex;justify-content:space-between}
+    .toast{
+      position:fixed;left:50%;bottom:18px;
+      transform:translateX(-50%) translateY(160%);
+      background:rgba(5,7,22,0.98);padding:10px 14px;border-radius:999px;
+      border:1px solid rgba(255,255,255,0.12);
+      display:flex;gap:12px;align-items:center;
+      transition:transform .2s,opacity .2s;opacity:0;pointer-events:none;
+      font-size:.85rem
+    }
+    .toast.visible{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+    footer{margin-top:18px;color:var(--muted);text-align:center;font-size:.85rem}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.hero{order:2}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo"><i class="fa-solid fa-clapperboard"></i></div>
+        <div>
+          <div class="brand-title">CineScope</div>
+          <div class="brand-sub">Rate. Share. Discover.</div>
+        </div>
+      </div>
+      <div class="pill"><i class="fa-solid fa-bolt"></i> Real-time • Single page</div>
+    </header>
+
+    <section class="grid">
+      <div class="hero">
+        <h1>Drop your <strong style="color:#ffdd87">movie hot takes</strong> in one place.</h1>
+        <p>Browse movies and post reviews — everything happens on this single, elegant page.</p>
+        <div class="actions">
+          <button class="btn btn-primary" id="cta-review">Write a review</button>
+          <button class="btn">See trending</button>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:600">Add your review</div>
+            <div style="font-size:.78rem;color:var(--muted)">Select a movie, rate it and add your thoughts</div>
+          </div>
+          <div style="font-size:.78rem;color:var(--muted)">No signup required</div>
+        </div>
+
+        <form id="review-form" style="margin-top:12px">
+          <div class="field">
+            <label for="movie">Movie</label>
+            <select id="movie" name="movie_id" class="select" required>
+              {% if movies %}
+                <option value="">Choose a movie…</option>
+                {% for m in movies %}
+                  <option value="{{ m.id }}">{{ m.title }} ({{ m.release_date|date:"Y" }})</option>
+                {% endfor %}
+              {% else %}
+                <option value="">No movies yet — add via admin</option>
+              {% endif %}
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" class="input" required placeholder="e.g. Alex Carter"/>
+          </div>
+
+          <div class="field">
+            <label>Your rating</label>
+            <div id="stars" style="font-size:1.05rem;display:flex;gap:6px;cursor:pointer">
+              <i class="fa-regular fa-star" data-value="1"></i>
+              <i class="fa-regular fa-star" data-value="2"></i>
+              <i class="fa-regular fa-star" data-value="3"></i>
+              <i class="fa-regular fa-star" data-value="4"></i>
+              <i class="fa-regular fa-star" data-value="5"></i>
+            </div>
+            <input type="hidden" id="rating" name="rating" value="0"/>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:6px" id="rating-label">Tap stars to rate</div>
+          </div>
+
+          <div class="field">
+            <label for="comment">Your thoughts</label>
+            <textarea id="comment" name="comment" class="textarea" required placeholder="What did you love or hate?"></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div style="color:var(--muted);font-size:.8rem"><i class="fa-solid fa-lightbulb"></i> Short & honest helps others.</div>
+            <button type="submit" class="btn btn-primary" id="submit-btn"><i class="fa-solid fa-paper-plane"></i> Post review</button>
+          </div>
+        </form>
+      </aside>
+    </section>
+
+    <section class="movies">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h2 style="margin:0">Latest movies <span style="color:var(--muted);font-size:.85rem">— click "Scroll to reviews" to inspect</span></h2>
+        <div class="pill"><i class="fa-solid fa-circle-info"></i> Reviews update live</div>
+      </div>
+
+      <div class="movie-grid" id="movies-grid">
+        {% if movies %}
+          {% for movie in movies %}
+            <article class="movie" data-id="{{ movie.id }}">
+              <div class="poster">
+                {% if movie.poster_url %}
+                  <img src="{{ movie.poster_url }}" alt="{{ movie.title }} poster"/>
+                {% else %}
+                  <img src="https://images.pexels.com/photos/799137/pexels-photo-799137.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="poster"/>
+                {% endif %}
+              </div>
+
+              <div class="m-body">
+                <div class="m-title">
+                  <h3>{{ movie.title }}</h3>
+                  <div style="color:#ffdd87;font-weight:600">{{ movie.avg_rating }}/5</div>
+                </div>
+                {% if movie.tagline %}<div class="meta">{{ movie.tagline }}</div>{% endif %}
+                <div class="meta">Released {{ movie.release_date|date:"M d, Y" }} • {{ movie.genre }}</div>
+
+                <div class="reviews" id="reviews-{{ movie.id }}">
+                  {% if movie.reviews.all %}
+                    {% for r in movie.reviews.all|slice:":4" %}
+                      <div class="review">
+                        <div class="head"><strong>{{ r.name }}</strong><span style="color:#ffdd87">{{ r.rating }}/5</span></div>
+                        <div class="meta">{{ r.comment }}</div>
+                        <div style="font-size:.72rem;color:var(--muted);margin-top:6px">{{ r.created_at|date:"M d, Y • h:i A" }}</div>
+                      </div>
+                    {% endfor %}
+                  {% else %}
+                    <div class="review"><div class="meta">No reviews yet. Be the first!</div></div>
+                  {% endif %}
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                  <div style="font-size:.82rem;color:var(--muted)">{{ movie.review_count }} review{{ movie.review_count|pluralize }}</div>
+                  <button class="btn" onclick="document.getElementById('reviews-{{ movie.id }}').scrollIntoView({behavior:'smooth'})">Scroll to reviews</button>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        {% else %}
+          <div style="padding:18px;border-radius:12px;border:1px dashed rgba(255,255,255,0.08);color:var(--muted)">No movies yet — add movies from the admin interface.</div>
+        {% endif %}
+      </div>
+    </section>
+
+    <footer>Built for demo • Add movies in /admin</footer>
+  </div>
+
+  <div class="toast" id="toast"><div id="toast-text">Message</div></div>
+
+  <script>
+    // CSRF from cookie
+    function getCookie(name){
+      const cookies=document.cookie?document.cookie.split(";"):[];
+      for(let c of cookies){
+        c=c.trim();
+        if(c.startsWith(name+"=")) return decodeURIComponent(c.substring(name.length+1));
+      }
+      return null;
+    }
+    const csrftoken=getCookie("csrftoken");
+
+    // Stars
+    const stars=document.querySelectorAll("#stars i");
+    const ratingInput=document.getElementById("rating");
+    const ratingLabel=document.getElementById("rating-label");
+    let currentRating=0;
+    function setStars(v){
+      currentRating=v;
+      ratingInput.value=v;
+      stars.forEach(s=>{
+        const val=parseInt(s.dataset.value,10);
+        if(val<=v){s.classList.remove("fa-regular");s.classList.add("fa-solid");s.style.color="#ffdd87";}
+        else{s.classList.remove("fa-solid");s.classList.add("fa-regular");s.style.color="";}
+      });
+      ratingLabel.textContent=v?`You rated ${v}/5`:"Tap stars to rate";
+    }
+    stars.forEach(s=>s.addEventListener("click",()=>setStars(parseInt(s.dataset.value,10))));
+
+    // Toast
+    const toast=document.getElementById("toast");
+    const toastText=document.getElementById("toast-text");
+    function showToast(msg,ok=true){
+      toastText.textContent=msg;
+      toast.style.borderColor=ok?"rgba(0,255,150,0.12)":"rgba(255,75,75,0.12)";
+      toast.classList.add("visible");
+      setTimeout(()=>toast.classList.remove("visible"),4000);
+    }
+
+    // Form submit
+    const form=document.getElementById("review-form");
+    const submitBtn=document.getElementById("submit-btn");
+    form.addEventListener("submit",function(e){
+      e.preventDefault();
+      const fd=new FormData(form);
+      if(!fd.get("movie_id")){showToast("Select a movie",false);return;}
+      if(!fd.get("rating")||parseInt(fd.get("rating"))===0){showToast("Tap the stars to rate",false);return;}
+
+      submitBtn.disabled=true;
+      submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Posting...';
+
+      fetch("{% url 'add_review' %}",{
+        method:"POST",
+        headers:{"X-CSRFToken":csrftoken},
+        body:fd
+      }).then(r=>r.json().then(b=>({status:r.status,body:b})))
+      .then(({status,body})=>{
+        if(status>=200 && status<300 && body.success){
+          showToast(body.message||"Review added!");
+          const list=document.getElementById("reviews-"+body.movie_id);
+          if(list){
+            const item=document.createElement("div");
+            item.className="review";
+            item.innerHTML=`<div class="head"><strong>${body.review.name}</strong><span style="color:#ffdd87">${body.review.rating}/5</span></div>
+                            <div class="meta">${body.review.comment}</div>
+                            <div style="font-size:.72rem;color:var(--muted);margin-top:6px">${body.review.created_at}</div>`;
+            list.insertBefore(item,list.firstChild);
+          }
+          const card=document.querySelector('.movie[data-id="'+body.movie_id+'"]');
+          if(card){
+            const avg=card.querySelector(".m-title div");
+            if(avg) avg.textContent=body.avg_rating+"/5";
+            const info=card.querySelector(".m-body > div.meta + .reviews + div > div");
+            if(info) info.textContent=`${body.review_count} review${body.review_count===1?"":"s"}`;
+          }
+
+          const chosen=form.movie_id.value;
+          form.reset();
+          setStars(0);
+          form.movie_id.value=chosen;
+        }else{
+          showToast(body.message||"Could not submit review",false);
+        }
+      })
+      .catch(()=>showToast("Network error",false))
+      .finally(()=>{submitBtn.disabled=false;submitBtn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Post review';});
+    });
+
+    document.getElementById("cta-review").addEventListener("click",()=>{
+      window.scrollTo({top:0,behavior:"smooth"});
+      document.getElementById("movie").focus();
+    });
+  </script>
+</body>
+</html>
