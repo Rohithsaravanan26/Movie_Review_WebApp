@@ -3,8 +3,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "change-me-in-production"
-DEBUG = True
-ALLOWED_HOSTS: list[str] = ['*']
+DEBUG = False
+ALLOWED_HOSTS= ['*']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
